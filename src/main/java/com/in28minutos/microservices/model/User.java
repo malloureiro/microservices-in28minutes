@@ -10,6 +10,8 @@ public class User {
 	
 	private Date birthdayDate;
 	
+	public User() {}
+	
 	public User(Long id, String name, Date birthdayDate) {
 		super();
 		this.id = id;
