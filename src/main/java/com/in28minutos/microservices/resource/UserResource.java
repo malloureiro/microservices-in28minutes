@@ -1,11 +1,17 @@
 package com.in28minutos.microservices.resource;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import java.net.URI;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +37,21 @@ public class UserResource {
 	}
 	
 	@GetMapping("/users/{id}")
-	public User retrieveUser(@PathVariable Long id) {
+	public Resource<User> retrieveUser(@PathVariable Long id) {
 		User user = service.findUser(id);
-		return user;
+		
+		Resource<User> resource = new Resource<User>(user);
+		
+		Link linkToSelf = linkTo(methodOn(this.getClass()).retrieveUser(id)).withSelfRel();
+		resource.add(linkToSelf);
+		
+		ControllerLinkBuilder linkAllUsers = linkTo(methodOn(this.getClass()).retrieveAll());
+		resource.add(linkAllUsers.withRel("all-users"));
+		
+		ControllerLinkBuilder linkToUserPosts = linkTo(methodOn(this.getClass()).retrieveUserPosts(id));
+		resource.add(linkToUserPosts.withRel("user-posts"));
+		
+		return resource;
 	}
 	
 	@PostMapping("/users")
