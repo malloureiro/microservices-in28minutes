@@ -15,7 +15,7 @@ public class PostDaoService {
 	public Post addPost(User user, Post post) {
 		List<Post> userPosts = user.getPosts();
 		
-		post.setId(++idCounter);
+		post.setPostId(++idCounter);
 		userPosts.add(post);
 		
 		return post;

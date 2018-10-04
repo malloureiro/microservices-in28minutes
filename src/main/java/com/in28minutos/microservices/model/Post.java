@@ -2,9 +2,11 @@ package com.in28minutos.microservices.model;
 
 import java.util.Date;
 
-public class Post {
+import org.springframework.hateoas.ResourceSupport;
 
-	private Long id;
+public class Post extends ResourceSupport {
+
+	private Long postId;
 	
 	private String title;
 
@@ -16,17 +18,17 @@ public class Post {
 	
 	public Post(Long id, String title, Date timestamp) {
 		super();
-		this.id = id;
+		this.postId = id;
 		this.title = title;
 		this.timestamp = timestamp;
 	}
 
-	public Long getId() {
-		return id;
+	public Long getPostId() {
+		return postId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setPostId(Long id) {
+		this.postId = id;
 	}
 
 	public String getTitle() {

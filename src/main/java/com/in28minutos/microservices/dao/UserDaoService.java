@@ -87,7 +87,7 @@ public class UserDaoService {
 		
 		List<Post> userPosts = user.getPosts();
 		for (Post post : userPosts) {
-			if (post.getId() == postId) {
+			if (post.getPostId() == postId) {
 				postFound = post;
 				break;
 			}

@@ -9,9 +9,6 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,21 +34,13 @@ public class UserResource {
 	}
 	
 	@GetMapping("/users/{id}")
-	public Resource<User> retrieveUser(@PathVariable Long id) {
+	public User retrieveUser(@PathVariable Long id) {
 		User user = service.findUser(id);
 		
-		Resource<User> resource = new Resource<User>(user);
-		
-		Link linkToSelf = linkTo(methodOn(this.getClass()).retrieveUser(id)).withSelfRel();
-		resource.add(linkToSelf);
-		
-		ControllerLinkBuilder linkAllUsers = linkTo(methodOn(this.getClass()).retrieveAll());
-		resource.add(linkAllUsers.withRel("all-users"));
-		
-		ControllerLinkBuilder linkToUserPosts = linkTo(methodOn(this.getClass()).retrieveUserPosts(id));
-		resource.add(linkToUserPosts.withRel("user-posts"));
-		
-		return resource;
+		user.add(linkTo(methodOn(this.getClass()).retrieveUser(id)).withSelfRel());
+		user.add(linkTo(methodOn(this.getClass()).retrieveAll()).withRel("all-users"));
+		user.add(linkTo(methodOn(this.getClass()).retrieveUserPosts(id)).withRel("user-posts"));
+		return user;
 	}
 	
 	@PostMapping("/users")
@@ -82,6 +71,8 @@ public class UserResource {
 	@GetMapping("/users/{id}/posts/{post_id}")
 	public Post retrievePostDetails(@PathVariable Long id, @PathVariable(value="post_id") Long postId) {
 		Post post = service.getPostDetails(id, postId);
+		
+		post.add(linkTo(methodOn(this.getClass()).retrieveUserPosts(id)).withRel("user-posts"));
 		return post;
 	}
 	
