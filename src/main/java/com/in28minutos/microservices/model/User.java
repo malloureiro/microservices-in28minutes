@@ -7,9 +7,11 @@ import java.util.List;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 
-public class User {
+import org.springframework.hateoas.ResourceSupport;
 
-	private Long id;
+public class User extends ResourceSupport {
+
+	private Long userId;
 	
 	@Size(min=2)
 	private String name;
@@ -24,17 +26,17 @@ public class User {
 	
 	public User(Long id, String name, Date birthdayDate) {
 		super();
-		this.id = id;
+		this.userId = id;
 		this.name = name;
 		this.birthdayDate = birthdayDate;
 	}
 
-	public Long getId() {
-		return id;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setUserId(Long id) {
+		this.userId = id;
 	}
 
 	public String getName() {
@@ -63,7 +65,7 @@ public class User {
 	
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", birthdayDate=" + birthdayDate + "]";
+		return "User [id=" + userId + ", name=" + name + ", birthdayDate=" + birthdayDate + "]";
 	}
 	
 }
