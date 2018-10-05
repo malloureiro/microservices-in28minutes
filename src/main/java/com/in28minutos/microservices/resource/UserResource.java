@@ -10,6 +10,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,31 +22,42 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.in28minutos.microservices.dao.UserDaoService;
 import com.in28minutos.microservices.model.Post;
 import com.in28minutos.microservices.model.User;
+import com.in28minutos.microservices.service.UserService;
 
 @RestController
 public class UserResource {
 
 	@Autowired
-	private UserDaoService service;
+	private UserService service;
+	
+	@Autowired
+	private UserDaoService daoService;
 	
 	@GetMapping("/users")
-	public List<User> retrieveAll() {
-		return service.findAll();
+	public MappingJacksonValue retrieveAll() {
+		List<User> users = daoService.findAll();
+		User[] users_ = new User[users.size()];
+		users_ = users.toArray(users_);
+		
+		// Adding dynamic filtering - do not want to return posts information on this response
+		return service.mapFilterValues(users_);
 	}
 	
 	@GetMapping("/users/{id}")
-	public User retrieveUser(@PathVariable Long id) {
-		User user = service.findUser(id);
+	public MappingJacksonValue retrieveUser(@PathVariable Long id) {
+		User user = daoService.findUser(id);
 		
 		user.add(linkTo(methodOn(this.getClass()).retrieveUser(id)).withSelfRel());
 		user.add(linkTo(methodOn(this.getClass()).retrieveAll()).withRel("all-users"));
 		user.add(linkTo(methodOn(this.getClass()).retrieveUserPosts(id)).withRel("user-posts"));
-		return user;
+		
+		// Adding dynamic filtering - do not want to return posts information on this response
+		return service.mapFilterValues(user);
 	}
 	
 	@PostMapping("/users")
 	public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-		User newUser = service.save(user);
+		User newUser = daoService.save(user);
 		
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newUser.getId()).toUri();
 		
@@ -54,14 +66,14 @@ public class UserResource {
 	
 	@DeleteMapping("/users/{id}")
 	public ResponseEntity<Object> removeUser(@PathVariable Long id) {
-		service.removeUser(id);
+		daoService.removeUser(id);
 		return ResponseEntity.noContent().build();
 	}
 	
 	@PostMapping("/users/{id}/posts")
 	public ResponseEntity<Post> createUserPost(@PathVariable Long id, @RequestBody Post post) {
 		
-		Post postCreated = service.createPost(id, post);
+		Post postCreated = daoService.createPost(id, post);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{post_id}").buildAndExpand(postCreated.getId()).toUri();
 		
@@ -70,7 +82,7 @@ public class UserResource {
 	
 	@GetMapping("/users/{id}/posts/{post_id}")
 	public Post retrievePostDetails(@PathVariable Long id, @PathVariable(value="post_id") Long postId) {
-		Post post = service.getPostDetails(id, postId);
+		Post post = daoService.getPostDetails(id, postId);
 		
 		post.add(linkTo(methodOn(this.getClass()).retrieveUserPosts(id)).withRel("user-posts"));
 		return post;
@@ -78,6 +90,6 @@ public class UserResource {
 	
 	@GetMapping("/users/{id}/posts")
 	public List<Post> retrieveUserPosts(@PathVariable Long id) {
-		return service.getUserPosts(id);
+		return daoService.getUserPosts(id);
 	}
 }

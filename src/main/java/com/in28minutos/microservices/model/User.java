@@ -9,6 +9,10 @@ import javax.validation.constraints.Size;
 
 import org.springframework.hateoas.ResourceSupport;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+//@JsonIgnoreProperties({"hreflang","media","title","type","deprecation"})
+@JsonFilter("UserPostsFilter")
 public class User extends ResourceSupport {
 
 	private Long userId;
