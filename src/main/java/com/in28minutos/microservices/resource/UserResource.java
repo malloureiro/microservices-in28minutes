@@ -36,6 +36,11 @@ public class UserResource {
 	@GetMapping("/users")
 	public MappingJacksonValue retrieveAll() {
 		List<User> users = daoService.findAll();
+		for (User user : users) {
+			user.add(linkTo(methodOn(this.getClass()).retrieveAll()).withSelfRel());
+			user.add(linkTo(methodOn(this.getClass()).retrieveUser(user.getUserId())).withRel("user-details"));
+		}
+		
 		User[] users_ = new User[users.size()];
 		users_ = users.toArray(users_);
 		

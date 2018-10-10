@@ -11,7 +11,6 @@ import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 
-//@JsonIgnoreProperties({"hreflang","media","title","type","deprecation"})
 @JsonFilter("UserPostsFilter")
 public class User extends ResourceSupport {
 
@@ -35,6 +34,7 @@ public class User extends ResourceSupport {
 		this.birthdayDate = birthdayDate;
 	}
 
+	
 	public Long getUserId() {
 		return userId;
 	}
