@@ -1,11 +1,2 @@
-https://www.baeldung.com/jackson-custom-serialization
-
-https://stackoverflow.com/questions/44671154/jackson-filtering-out-fields-without-annotations/44673223#44673223
-
-https://stackoverflow.com/questions/29630371/jackson-ignore-all-properties-of-superclass-from-external-library
-
-https://stackoverflow.com/questions/7161638/how-do-i-use-a-custom-serializer-with-jackson
-
-TODO:
-User entity is serializing with some properties inherited from ResourceSupport > Link classes.
-Should ignore these properties on serialization.
+# REST versioning article
+https://www.baeldung.com/rest-versioning
