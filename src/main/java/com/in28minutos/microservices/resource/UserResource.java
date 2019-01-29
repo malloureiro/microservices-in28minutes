@@ -45,19 +45,18 @@ public class UserResource {
 		users_ = users.toArray(users_);
 		
 		// Adding dynamic filtering - do not want to return posts information on this response
-		return service.mapFilterValues(users_);
+		return service.mapUserDataPresentation(users_);
 	}
 	
 	@GetMapping("/users/{id}")
 	public MappingJacksonValue retrieveUser(@PathVariable Long id) {
 		User user = daoService.findUser(id);
 		
-		user.add(linkTo(methodOn(this.getClass()).retrieveUser(id)).withSelfRel());
 		user.add(linkTo(methodOn(this.getClass()).retrieveAll()).withRel("all-users"));
 		user.add(linkTo(methodOn(this.getClass()).retrieveUserPosts(id)).withRel("user-posts"));
 		
 		// Adding dynamic filtering - do not want to return posts information on this response
-		return service.mapFilterValues(user);
+		return service.mapUserDataPresentation(user);
 	}
 	
 	@PostMapping("/users")

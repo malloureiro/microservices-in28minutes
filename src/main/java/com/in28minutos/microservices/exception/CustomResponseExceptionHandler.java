@@ -20,7 +20,7 @@ public class CustomResponseExceptionHandler extends ResponseEntityExceptionHandl
 	public ExceptionResponse handleUserNotFoundException(Exception ex, WebRequest request) {
 		
 		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
-				request.getDescription(false));
+				ex.getCause().getMessage());
 		return exceptionResponse;
 	}
 	

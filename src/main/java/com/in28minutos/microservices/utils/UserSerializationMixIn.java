@@ -3,12 +3,12 @@ package com.in28minutos.microservices.utils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Class used to configure fields to be excluded from User json on serialization
+ * Class used to configure fields to be excluded from User json on serialization (HATEOAS).
  * 
  * @author mloureiro
  *
  */
-public abstract class UserMixIn {
+public abstract class UserSerializationMixIn {
 
 	@JsonIgnore
 	public String hreflang;

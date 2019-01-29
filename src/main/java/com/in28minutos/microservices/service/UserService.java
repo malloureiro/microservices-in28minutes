@@ -10,7 +10,15 @@ import com.in28minutos.microservices.model.User;
 @Component
 public class UserService {
 
-	public MappingJacksonValue mapFilterValues(User...users) {
+	/**
+	 * Customize json presentation. 
+	 * 
+	 * Given the @param users, serialize all information EXCEPT {@Post} related data (which should only be presented on specific endpoint).
+	 * 
+	 * @param users
+	 * @return User object without Post information.
+	 */
+	public MappingJacksonValue mapUserDataPresentation(User...users) {
 		SimpleFilterProvider filters = new SimpleFilterProvider();
 		filters.addFilter("UserPostsFilter", SimpleBeanPropertyFilter.serializeAllExcept("posts"));
 		
