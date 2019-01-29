@@ -10,7 +10,9 @@ import javax.validation.constraints.Size;
 import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.in28minutos.microservices.service.CustomDateDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.in28minutos.microservices.mapping.CustomDateDeserializer;
+import com.in28minutos.microservices.mapping.CustomUserSerializer;
 
 /*
  *  JsonFilter is setting dinamic filter. It's used when a service modifies the json returned (MappingJacksonValue)
@@ -26,6 +28,8 @@ import com.in28minutos.microservices.service.CustomDateDeserializer;
  *  
  */
 //@JsonFilter("UserPostsFilter")
+
+@JsonSerialize(using = CustomUserSerializer.class)
 public class User extends ResourceSupport {
 
 	private Long userId;

@@ -1,4 +1,4 @@
-package com.in28minutos.microservices.service;
+package com.in28minutos.microservices.mapping;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

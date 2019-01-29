@@ -20,13 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.in28minutos.microservices.dao.PostDaoService;
 import com.in28minutos.microservices.dao.UserDaoService;
 import com.in28minutos.microservices.model.Post;
 import com.in28minutos.microservices.model.User;
-import com.in28minutos.microservices.service.CustomUserSerializer;
 import com.in28minutos.microservices.service.UserService;
 
 @RestController
@@ -53,25 +50,19 @@ public class UserResource {
 		User[] users_ = new User[users.size()];
 		users_ = users.toArray(users_);
 		
-		// Adding dynamic filtering - do not want to return posts information on this response
+		// Adding dynamic filtering - do not want to return "posts" information on this response
+		// Bellow code is not needed anymore, but it left here for exemplification of SimpleProvider filter  
 		return service.mapUserDataPresentation(users_);
 	}
 	
-	@GetMapping(path="/users/{id}", produces="application/json")
-	public String retrieveUser(@PathVariable Long id) throws JsonProcessingException {
+	@GetMapping("/users/{id}")
+	public User retrieveUser(@PathVariable Long id) throws JsonProcessingException {
 		User user = userDaoService.findUser(id);
 		
 		user.add(linkTo(methodOn(this.getClass()).retrieveAll()).withRel("all-users"));
 		user.add(linkTo(methodOn(this.getClass()).retrieveUserPosts(id)).withRel("user-posts"));
 		
-		// TODO - DECLARAÇÃO DE CUSTOM SERIALIZER NÃO DEVE REPETIR PARA TODOS OS MÉTODOS
-		ObjectMapper objMapper = new ObjectMapper();
-		objMapper.registerModule(new SimpleModule().addSerializer(User.class, new CustomUserSerializer()));
-		return objMapper.writeValueAsString(user);
-		
-		
-		// Adding dynamic filtering - do not want to return posts information on this response
-		//return service.mapUserDataPresentation(user);
+		return user;
 	}
 	
 	@PostMapping("/users")
