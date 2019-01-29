@@ -1,4 +1,4 @@
-package com.in28minutos.microservices.utils;
+package com.in28minutos.microservices.mapping;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author mloureiro
  *
  */
-public abstract class UserSerializationMixIn {
+public abstract class UserLinkMapping {
 
 	@JsonIgnore
 	public String hreflang;

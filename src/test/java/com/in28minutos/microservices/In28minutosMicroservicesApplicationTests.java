@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.in28minutos.microservices.utils.UserSerializationMixIn;
+import com.in28minutos.microservices.mapping.UserLinkMapping;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -31,7 +31,7 @@ public class In28minutosMicroservicesApplicationTests {
 	@Test
 	public void testMixInSerialization() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.addMixIn(Link.class, UserSerializationMixIn.class);
+		mapper.addMixIn(Link.class, UserLinkMapping.class);
 		
 		Link link = new Link("localhost");
 		

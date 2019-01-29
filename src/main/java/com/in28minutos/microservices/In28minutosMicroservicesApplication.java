@@ -10,7 +10,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
-import com.in28minutos.microservices.utils.UserSerializationMixIn;
+import com.in28minutos.microservices.mapping.UserLinkMapping;
 
 
 @SpringBootApplication
@@ -41,7 +41,7 @@ public class In28minutosMicroservicesApplication {
 	@Bean
 	public Jackson2ObjectMapperBuilder objectMapperBuilder() {
 		Jackson2ObjectMapperBuilder mapperBuilder = new Jackson2ObjectMapperBuilder();
-		mapperBuilder.mixIn(Link.class, UserSerializationMixIn.class);
+		mapperBuilder.mixIn(Link.class, UserLinkMapping.class);
 		return mapperBuilder;
 	}
 	

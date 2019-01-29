@@ -19,9 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.in28minutos.microservices.dao.PostDaoService;
 import com.in28minutos.microservices.dao.UserDaoService;
 import com.in28minutos.microservices.model.Post;
 import com.in28minutos.microservices.model.User;
+import com.in28minutos.microservices.service.CustomUserSerializer;
 import com.in28minutos.microservices.service.UserService;
 
 @RestController
@@ -31,11 +36,15 @@ public class UserResource {
 	private UserService service;
 	
 	@Autowired
-	private UserDaoService daoService;
+	private UserDaoService userDaoService;
+	
+	@Autowired
+	private PostDaoService postDaoService;
+	
 	
 	@GetMapping("/users")
-	public MappingJacksonValue retrieveAll() {
-		List<User> users = daoService.findAll();
+	public MappingJacksonValue retrieveAll() throws JsonProcessingException {
+		List<User> users = userDaoService.findAll();
 		for (User user : users) {
 			user.add(linkTo(methodOn(this.getClass()).retrieveAll()).withSelfRel());
 			user.add(linkTo(methodOn(this.getClass()).retrieveUser(user.getUserId())).withRel("user-details"));
@@ -48,20 +57,26 @@ public class UserResource {
 		return service.mapUserDataPresentation(users_);
 	}
 	
-	@GetMapping("/users/{id}")
-	public MappingJacksonValue retrieveUser(@PathVariable Long id) {
-		User user = daoService.findUser(id);
+	@GetMapping(path="/users/{id}", produces="application/json")
+	public String retrieveUser(@PathVariable Long id) throws JsonProcessingException {
+		User user = userDaoService.findUser(id);
 		
 		user.add(linkTo(methodOn(this.getClass()).retrieveAll()).withRel("all-users"));
 		user.add(linkTo(methodOn(this.getClass()).retrieveUserPosts(id)).withRel("user-posts"));
 		
+		// TODO - DECLARAÇÃO DE CUSTOM SERIALIZER NÃO DEVE REPETIR PARA TODOS OS MÉTODOS
+		ObjectMapper objMapper = new ObjectMapper();
+		objMapper.registerModule(new SimpleModule().addSerializer(User.class, new CustomUserSerializer()));
+		return objMapper.writeValueAsString(user);
+		
+		
 		// Adding dynamic filtering - do not want to return posts information on this response
-		return service.mapUserDataPresentation(user);
+		//return service.mapUserDataPresentation(user);
 	}
 	
 	@PostMapping("/users")
 	public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-		User newUser = daoService.save(user);
+		User newUser = userDaoService.save(user);
 		
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newUser.getId()).toUri();
 		
@@ -70,14 +85,14 @@ public class UserResource {
 	
 	@DeleteMapping("/users/{id}")
 	public ResponseEntity<Object> removeUser(@PathVariable Long id) {
-		daoService.removeUser(id);
+		userDaoService.removeUser(id);
 		return ResponseEntity.noContent().build();
 	}
 	
 	@PostMapping("/users/{id}/posts")
 	public ResponseEntity<Post> createUserPost(@PathVariable Long id, @RequestBody Post post) {
 		
-		Post postCreated = daoService.createPost(id, post);
+		Post postCreated = postDaoService.createPost(id, post);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{post_id}").buildAndExpand(postCreated.getId()).toUri();
 		
@@ -86,7 +101,7 @@ public class UserResource {
 	
 	@GetMapping("/users/{id}/posts/{post_id}")
 	public Post retrievePostDetails(@PathVariable Long id, @PathVariable(value="post_id") Long postId) {
-		Post post = daoService.getPostDetails(id, postId);
+		Post post = postDaoService.getPostDetails(id, postId);
 		
 		post.add(linkTo(methodOn(this.getClass()).retrieveUserPosts(id)).withRel("user-posts"));
 		return post;
@@ -94,6 +109,6 @@ public class UserResource {
 	
 	@GetMapping("/users/{id}/posts")
 	public List<Post> retrieveUserPosts(@PathVariable Long id) {
-		return daoService.getUserPosts(id);
+		return postDaoService.getUserPosts(id);
 	}
 }
